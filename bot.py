@@ -6,6 +6,7 @@ from loguru import logger
 
 from loader import bot, dp
 from tgbot.config import Settings, config
+from tgbot.models.supabase import get_client
 from tgbot.services.admins_notify import on_startup_notify
 from tgbot.services.setting_commands import set_default_commands
 
@@ -49,9 +50,15 @@ async def main():
     )
     logger.info("Starting bot")
 
+    client = get_client()
+    logger.info("Getting supabase client")
+
     await on_startup(dp, bot, config)
     await dp.start_polling(
-        bot, allowed_updates=dp.resolve_used_update_types(), config=config
+        bot,
+        allowed_updates=dp.resolve_used_update_types(),
+        config=config,
+        client=client,
     )
 
 

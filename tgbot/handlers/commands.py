@@ -2,6 +2,7 @@ from aiogram import F, Router
 from aiogram.filters import Command, CommandStart, Text
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
+from supabase import Client
 
 from loader import dp
 
@@ -10,7 +11,8 @@ router.message.filter(F.text)
 
 
 @router.message(CommandStart())
-async def answer_start(message: Message):
+async def answer_start(message: Message, client: Client):
+    print(client)
     return await message.answer("start command")
 
 
