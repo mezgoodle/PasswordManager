@@ -31,6 +31,8 @@ async def cancel_state(message: Message, state: FSMContext):
 async def help_command(message: Message, client: SUPABASE_CLIENT):
     result = client.get_all("Users", "username, telegram_id")
     print(result)
+    result = client.get_single("Users", "username", "sylvenis")
+    print(result)
     return await message.answer("help command")
 
 

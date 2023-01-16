@@ -63,3 +63,23 @@ class SUPABASE_CLIENT:
             return data.data
         except Exception as e:
             logger.error(e)
+
+    def get_single(
+        self, table: str, column: str, value: str, columns: str = "*"
+    ) -> dict:
+        """Method for getting single object from the table
+
+        Args:
+            table (str): name of the table
+            column (str, optional): name of the column as condition.
+            value (str, optional): value of the column as condition.
+            columns (str, optional): names of the columns to select. Defaults to "*".
+
+        Returns:
+            dict: object from the table
+        """
+        logger.info("Trying to getting data")
+        try:
+            return self.get_all(table, columns, column, value)
+        except Exception as e:
+            logger.error(e)
