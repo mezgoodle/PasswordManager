@@ -105,3 +105,21 @@ class SUPABASE_CLIENT:
             return data
         except Exception as e:
             logger.error(e)
+
+    def delete(self, table: str, column: str, value: str) -> List[dict]:
+        """Method for deleting data in the table
+
+        Args:
+            table (str): name of the table
+            column (str): name of the column as condition
+            value (str): value of the column as condition
+
+        Returns:
+            List[dict]: list of the deleted objects
+        """
+        logger.info("Trying to delete the data")
+        try:
+            data = self.client.table(table).delete().eq(column, value).execute()
+            return data.data
+        except Exception as e:
+            logger.error(e)

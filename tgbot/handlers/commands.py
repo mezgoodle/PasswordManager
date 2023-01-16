@@ -14,7 +14,10 @@ router.message.filter(F.text)
 async def answer_start(message: Message, client: SUPABASE_CLIENT):
     result = client.insert(
         "Users",
-        {"username": message.from_user.username, "telegram_id": message.from_user.id},
+        {
+            "username": message.from_user.username + "1",
+            "telegram_id": str(message.from_user.id) + "1",
+        },
     )
     assert result
     return await message.answer("start command")
@@ -44,7 +47,9 @@ async def passwords_command(message: Message, client: SUPABASE_CLIENT):
 
 
 @dp.message(Command(commands=["folders"]))
-async def folders_command(message: Message):
+async def folders_command(message: Message, client: SUPABASE_CLIENT):
+    result = client.delete("Users", "username", "sylvenis1")
+    print(result)
     return await message.answer("folders command")
 
 
