@@ -83,3 +83,25 @@ class SUPABASE_CLIENT:
             return self.get_all(table, columns, column, value)
         except Exception as e:
             logger.error(e)
+
+    def update(
+        self, table: str, columns: Dict[str, str], column: str, value: str
+    ) -> List[dict]:
+        """Method for updating objects in the table
+
+        Args:
+            table (str): name of the table
+            columns (Dict[str, str]): dictionary with columns to changed to values
+            column (str): name of the column as condition
+            value (str): value of the column as condition
+
+        Returns:
+            List[dict]: list of the objects which were updated
+        """
+        logger.info("Trying to update the data")
+        try:
+            data = self.client.table(table).update(columns).eq(column, value).execute()
+            print(data.data)
+            return data
+        except Exception as e:
+            logger.error(e)

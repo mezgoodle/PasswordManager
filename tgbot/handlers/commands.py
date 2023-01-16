@@ -37,7 +37,9 @@ async def help_command(message: Message, client: SUPABASE_CLIENT):
 
 
 @router.message(Command(commands=["passwords"]))
-async def passwords_command(message: Message):
+async def passwords_command(message: Message, client: SUPABASE_CLIENT):
+    result = client.update("Users", {"username": "sylvenis"}, "username", "sylvenis")
+    print(result)
     return await message.answer("passwords")
 
 
