@@ -28,7 +28,9 @@ async def cancel_state(message: Message, state: FSMContext):
 
 
 @router.message(Command(commands=["help"]))
-async def help_command(message: Message):
+async def help_command(message: Message, client: SUPABASE_CLIENT):
+    result = client.get_all("Users", "username, telegram_id")
+    print(result)
     return await message.answer("help command")
 
 
