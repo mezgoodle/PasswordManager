@@ -1,5 +1,6 @@
 from typing import Dict, List
 
+from gotrue.exceptions import APIError
 from loguru import logger
 from supabase import Client, create_client
 
@@ -124,10 +125,44 @@ class SUPABASE_CLIENT:
         except Exception as e:
             logger.error(e)
 
-    def sign_up(self, email: str, password: str):
+    def sign_up(self, email: str, password: str) -> dict:
+        """Method for signing up in the Supabase
+
+        Args:
+            email (str): email of the user
+            password (str): password of the user
+
+        Returns:
+            dict: dict representation of the user model
+        """
         logger.info("Trying to sign up")
         try:
             user = self.client.auth.sign_up(email=email, password=password)
-            return user
+            return user.dict()
         except Exception as e:
             logger.error(e)
+
+    def sign_in(self, email: str, password: str) -> str:
+        """Method for signing in in Supabase
+
+        Args:
+            email (str): email of the user
+            password (str): password of the user
+
+        Returns:
+            str: access token
+        """
+        try:
+            session = self.client.auth.sign_in(email=email, password=password)
+            self.sign_out()
+            return session.access_token
+        except APIError:
+            logger.error("Bad sign in")
+
+    def sign_out(self) -> None:
+        """Method for signing out from the Supabase
+
+        Returns:
+            None: nothing to return
+        """
+        return self.client.auth.sign_out()
