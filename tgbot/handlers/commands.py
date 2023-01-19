@@ -4,22 +4,24 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
 
 from loader import dp
+from tgbot.middlewares.authenticated import AuthMiddleware
 from tgbot.models.supabase import SUPABASE_CLIENT
 
 router = Router()
 router.message.filter(F.text)
+router.message.middleware(AuthMiddleware())
 
 
 @router.message(CommandStart())
 async def answer_start(message: Message, client: SUPABASE_CLIENT):
-    result = client.insert(
-        "Users",
-        {
-            "username": message.from_user.username + "1",
-            "telegram_id": str(message.from_user.id) + "1",
-        },
-    )
-    assert result
+    # result = client.insert(
+    #     "Users",
+    #     {
+    #         "username": message.from_user.username + "1",
+    #         "telegram_id": str(message.from_user.id) + "1",
+    #     },
+    # )
+    # assert result
     return await message.answer("start command")
 
 
