@@ -123,3 +123,11 @@ class SUPABASE_CLIENT:
             return data.data
         except Exception as e:
             logger.error(e)
+
+    def sign_up(self, email: str, password: str):
+        logger.info("Trying to sign up")
+        try:
+            user = self.client.auth.sign_up(email=email, password=password)
+            return user
+        except Exception as e:
+            logger.error(e)
