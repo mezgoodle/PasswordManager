@@ -13,5 +13,8 @@ class AuthMiddleware(BaseMiddleware):
     ) -> Any:
         state = data["state"]
         user_data = await state.get_data()
-        print(user_data["token"])
-        return await handler(event, data)
+        try:
+            _ = user_data["token"]
+            return await handler(event, data)
+        except KeyError:
+            return await event.answer("You need to log in. Enter /l.")

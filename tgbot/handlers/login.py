@@ -2,6 +2,7 @@ from aiogram import F, Router
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from loader import dp
 from tgbot.models.supabase import SUPABASE_CLIENT
@@ -27,13 +28,21 @@ async def answer_email(message: Message, state: FSMContext):
 
 
 @router.message(UserCredentials.password)
-async def answer_password(message: Message, state: FSMContext, client: SUPABASE_CLIENT):
+async def answer_password(
+    message: Message,
+    state: FSMContext,
+    client: SUPABASE_CLIENT,
+    scheduler: AsyncIOScheduler,
+):
     user_data = await state.get_data()
     await state.set_state(state=None)
-    token = client.sign_in(user_data["email"], message.text.lower())
+    token = await client.sign_in(user_data["email"], message.text.lower())
     print(token)
     await state.update_data(token=token)
-    return await message.answer("You have successfully logged in.")
+    scheduler.add_job(client.sign_out, "interval", minutes=5, args=(state,))
+    return await message.answer(
+        "You have successfully logged in. You will be automatically sing out after 5 minutes."
+    )
 
 
 @router.message(UserCredentials.password)

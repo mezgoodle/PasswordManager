@@ -1,5 +1,6 @@
 from typing import Dict, List
 
+from aiogram.fsm.context import FSMContext
 from gotrue.exceptions import APIError
 from loguru import logger
 from supabase import Client, create_client
@@ -142,7 +143,7 @@ class SUPABASE_CLIENT:
         except Exception as e:
             logger.error(e)
 
-    def sign_in(self, email: str, password: str) -> str:
+    async def sign_in(self, email: str, password: str) -> str:
         """Method for signing in in Supabase
 
         Args:
@@ -154,15 +155,24 @@ class SUPABASE_CLIENT:
         """
         try:
             session = self.client.auth.sign_in(email=email, password=password)
-            self.sign_out()
+            self.client.auth.sign_out()
             return session.access_token
         except APIError:
             logger.error("Bad sign in")
 
-    def sign_out(self) -> None:
-        """Method for signing out from the Supabase
+    async def sign_out(self, state: FSMContext) -> None:
+        """Method for signing out from the bot app
+
+        Args:
+            state (FSMContext): state from aiogram
 
         Returns:
             None: nothing to return
         """
-        return self.client.auth.sign_out()
+        user_data = await state.get_data()
+        try:
+            _ = user_data["token"]
+            await state.clear()
+            return
+        except KeyError:
+            pass
