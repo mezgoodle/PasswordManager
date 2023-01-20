@@ -2,6 +2,7 @@ import asyncio
 
 from aiogram import Bot, Dispatcher
 from aiogram.types.webhook_info import WebhookInfo
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from loguru import logger
 
 from loader import bot, dp
@@ -53,12 +54,17 @@ async def main():
     client = SUPABASE_CLIENT()
     logger.info("Getting supabase client")
 
+    scheduler = AsyncIOScheduler()
+    scheduler.start()
+    logger.info("Starting the scheduler")
+
     await on_startup(dp, bot, config)
     await dp.start_polling(
         bot,
         allowed_updates=dp.resolve_used_update_types(),
         config=config,
         client=client,
+        scheduler=scheduler,
     )
 
 
