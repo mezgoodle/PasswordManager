@@ -37,7 +37,6 @@ async def answer_password(
     user_data = await state.get_data()
     await state.set_state(state=None)
     token = await client.sign_in(user_data["email"], message.text.lower())
-    print(token)
     await state.update_data(token=token)
     scheduler.add_job(client.sign_out, "interval", minutes=5, args=(state,))
     return await message.answer(

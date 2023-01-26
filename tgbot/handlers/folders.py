@@ -4,6 +4,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from loader import dp
+from tgbot.keyboards.inline.folders import folders_keyboard
 from tgbot.middlewares.authenticated import AuthMiddleware
 from tgbot.models.supabase import SUPABASE_CLIENT
 from tgbot.states.states import Folder
@@ -16,8 +17,8 @@ router.message.middleware(AuthMiddleware())
 @router.message(Command(commands=["folders"]))
 async def show_folders(message: Message, client: SUPABASE_CLIENT):
     folders = client.get_all("Folders", column="user", value=str(message.from_user.id))
-    print(folders)
-    return await message.answer("Your folders:")
+    keyboard = folders_keyboard(folders)
+    return await message.answer("Your folders:", reply_markup=keyboard)
 
 
 @router.message(Command(commands=["create_folder", "cf"]))

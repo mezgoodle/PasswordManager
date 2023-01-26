@@ -4,7 +4,6 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
 
 from loader import dp
-from tgbot.middlewares.authenticated import AuthMiddleware
 from tgbot.models.supabase import SUPABASE_CLIENT
 
 router = Router()
