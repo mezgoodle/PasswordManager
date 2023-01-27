@@ -1,4 +1,4 @@
-from aiogram import F, Router
+from aiogram import F, Router, html
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
@@ -13,10 +13,15 @@ router.message.filter(F.text)
 
 @router.message(Command(commands=["reg", "register", "r"]))
 async def start_register(message: Message, state: FSMContext):
-    await state.set_state(UserCredentials.email)
-    return await message.answer(
-        "You have started your registration process. Enter your working email."
-    )
+    user_data = await state.get_data()
+    try:
+        _ = user_data["token"]
+        return await message.answer(html.bold("You have already logged in"))
+    except KeyError:
+        await state.set_state(UserCredentials.email)
+        return await message.answer(
+            "You have started your registration process. Enter your working email."
+        )
 
 
 @router.message(UserCredentials.email)

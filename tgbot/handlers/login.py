@@ -1,4 +1,4 @@
-from aiogram import F, Router
+from aiogram import F, Router, html
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
@@ -14,10 +14,15 @@ router.message.filter(F.text)
 
 @router.message(Command(commands=["login", "log", "l"]))
 async def start_login(message: Message, state: FSMContext):
-    await state.set_state(UserCredentials.email)
-    return await message.answer(
-        "You have started your login process. Enter your email."
-    )
+    user_data = await state.get_data()
+    try:
+        _ = user_data["token"]
+        return await message.answer(html.bold("You have already logged in"))
+    except KeyError:
+        await state.set_state(UserCredentials.email)
+        return await message.answer(
+            "You have started your login process. Enter your email."
+        )
 
 
 @router.message(UserCredentials.email)
