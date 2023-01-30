@@ -82,7 +82,7 @@ class SUPABASE_CLIENT:
         """
         logger.info("Trying to getting data")
         try:
-            return self.get_all(table, columns, column, value)
+            return self.get_all(table, columns, column, value)[0]
         except Exception as e:
             logger.error(e)
 
