@@ -73,8 +73,8 @@ class SUPABASE_CLIENT:
 
         Args:
             table (str): name of the table
-            column (str, optional): name of the column as condition.
-            value (str, optional): value of the column as condition.
+            column (str): name of the column as condition.
+            value (str): value of the column as condition.
             columns (str, optional): names of the columns to select. Defaults to "*".
 
         Returns:
