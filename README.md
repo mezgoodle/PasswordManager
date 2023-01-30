@@ -1,4 +1,5 @@
 # bot_template
+
 My template for aiogram bots
 
 <h1 id="project-title" align="center">
@@ -18,11 +19,11 @@ My template for aiogram bots
 
 ## Motivation :exclamation:
 
-When I was developing [Telegramia](https://github.com/mezidia/telegramia), I've used these templates: [aiogram-bot-template](https://github.com/Latand/aiogram-bot-template) and [tgbot_template](https://github.com/Latand/tgbot_template) for creating bots. And I have many probles with them. So I decided to create my own template.
+When I was developing [Telegramia](https://github.com/mezidia/telegramia), I've used these templates: [aiogram-bot-template](https://github.com/Latand/aiogram-bot-template) and [tgbot_template](https://github.com/Latand/tgbot_template) for creating bots. And I have many problems with them. So I decided to create my own template.
 
 ## Diagram
 
-Here you can understand how template works and what is imported from where.
+Here you can understand how the template works and what is imported from where.
 
 ```mermaid
 classDiagram
@@ -70,7 +71,7 @@ classDiagram
     class `tgbot.handlers`{
     }
     class some_handler{
-      
+
     }
     class `tgbot.filters`{
       custom_filter
@@ -85,19 +86,19 @@ classDiagram
         inline_keyboard
     }
     class `tgbot.middlewares` {
-        
+
     }
     class custom_middleware {
         rate_limit()
     }
     class `tgbot.misc` {
-        
+
     }
     class `tgbot.models` {
-        
+
     }
     class `tgbot.services` {
-        
+
     }
     class set_default_commands {
         set_commands()
