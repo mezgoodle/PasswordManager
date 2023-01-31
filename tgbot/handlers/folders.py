@@ -1,10 +1,15 @@
-from aiogram import F, Router
+from aiogram import F, Router, html
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message
+from aiogram.types import CallbackQuery, Message
 
 from loader import dp
+from tgbot.keyboards.inline.callbacks import (
+    FoldersCallbackFactory,
+    QuestionCallbackFactory,
+)
 from tgbot.keyboards.inline.folders import folders_keyboard
+from tgbot.keyboards.inline.question import question_keyboard
 from tgbot.middlewares.authenticated import AuthMiddleware
 from tgbot.models.supabase import SUPABASE_CLIENT
 from tgbot.states.states import Folder
@@ -49,9 +54,50 @@ async def answer_description(
     )
     if folder:
         await state.set_state(state=None)
-        return await message.answer("Write description of folder")
+        return await message.answer("You have successfully create the folder")
     await state.set_state(Folder.name)
     return await message.answer("Try again from the name:")
+
+
+@router.callback_query(FoldersCallbackFactory.filter(F.action == "show"))
+async def show_folder(
+    callback: CallbackQuery,
+    callback_data: FoldersCallbackFactory,
+    client: SUPABASE_CLIENT,
+):
+    folder = client.get_single("Folders", "id", callback_data.id)
+    await callback.message.answer(
+        f"Name: {html.bold(folder['name'])}\nDescription: {html.bold(folder['description'])}"
+    )
+    return await callback.answer()
+
+
+@router.callback_query(FoldersCallbackFactory.filter(F.action == "delete"))
+async def delete_folder(
+    callback: CallbackQuery, callback_data: FoldersCallbackFactory, state: FSMContext
+):
+    await state.update_data({"folder_id": callback_data.id})
+    keyboard = question_keyboard()
+    await callback.message.answer(
+        f"Are you sure to delete {html.bold(callback_data.name)} folder?",
+        reply_markup=keyboard,
+    )
+    return await callback.answer()
+
+
+@router.callback_query(QuestionCallbackFactory.filter())
+async def delete_folder_answer(
+    callback: CallbackQuery,
+    callback_data: QuestionCallbackFactory,
+    state: FSMContext,
+    client: SUPABASE_CLIENT,
+):
+    data = await state.get_data()
+    if callback_data.answer:
+        client.delete("Folders", "id", data["folder_id"])
+        await state.update_data({"folder_id": None})
+        await callback.message.answer(f"Folder has been deleted")
+    return await callback.answer()
 
 
 dp.include_router(router)
