@@ -63,11 +63,9 @@ async def answer_description(
 async def show_folder(
     callback: CallbackQuery,
     callback_data: FoldersCallbackFactory,
-    client: SUPABASE_CLIENT,
 ):
-    folder = client.get_single("Folders", "id", callback_data.id)
     await callback.message.answer(
-        f"Name: {html.bold(folder['name'])}\nDescription: {html.bold(folder['description'])}"
+        f"Name: {html.bold(callback_data.name)}\nDescription: {html.bold(callback_data.description)}"
     )
     return await callback.answer()
 
@@ -81,6 +79,25 @@ async def delete_folder(
     await callback.message.answer(
         f"Are you sure to delete {html.bold(callback_data.name)} folder?",
         reply_markup=keyboard,
+    )
+    return await callback.answer()
+
+
+@router.callback_query(FoldersCallbackFactory.filter(F.action == "update"))
+async def update_folder(
+    callback: CallbackQuery, callback_data: FoldersCallbackFactory, state: FSMContext
+):
+    await state.set_state(Folder.name)
+    await state.update_data(
+        {
+            "folder_name": callback_data.name,
+            "folder_description": callback_data.description,
+            "folder_id": callback_data.id,
+            "type": "update",
+        }
+    )
+    await callback.message.answer(
+        "Write new name of the folder or press /pass to left the previous value",
     )
     return await callback.answer()
 

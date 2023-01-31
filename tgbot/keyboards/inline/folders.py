@@ -11,7 +11,10 @@ def folders_keyboard(folders: List[dict]):
         builder.button(
             text=folder["name"],
             callback_data=FoldersCallbackFactory(
-                id=folder["id"], action="show", name=folder["name"]
+                id=folder["id"],
+                action="update",
+                name=folder["name"],
+                description=folder["description"],
             ),
         )
         builder.button(
@@ -23,7 +26,10 @@ def folders_keyboard(folders: List[dict]):
         builder.button(
             text="Update",
             callback_data=FoldersCallbackFactory(
-                id=folder["id"], action="update", name=folder["name"]
+                id=folder["id"],
+                action="update",
+                name=folder["name"],
+                description=folder["description"],
             ),
         )
     builder.adjust(3)
