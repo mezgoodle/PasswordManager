@@ -12,7 +12,7 @@ from tgbot.keyboards.inline.folders import folders_keyboard
 from tgbot.keyboards.inline.question import question_keyboard
 from tgbot.middlewares.authenticated import AuthMiddleware
 from tgbot.models.supabase import SUPABASE_CLIENT
-from tgbot.states.states import Folder
+from tgbot.states.states import Folder, UpdateFolder
 
 router = Router()
 router.message.filter(F.text)
@@ -34,6 +34,7 @@ async def create_folder(message: Message, state: FSMContext):
 
 @router.message(Folder.name)
 async def answer_name(message: Message, state: FSMContext):
+    print("hello 2")
     await state.update_data(folder_name=message.text.lower())
     await state.set_state(Folder.description)
     return await message.answer("Write description of folder")
@@ -56,6 +57,40 @@ async def answer_description(
         await state.set_state(state=None)
         return await message.answer("You have successfully create the folder")
     await state.set_state(Folder.name)
+    return await message.answer("Try again from the name:")
+
+
+@router.message(UpdateFolder.name)
+async def answer_update_name(message: Message, state: FSMContext):
+    print("hello 1")
+    if message.text != "/pass":
+        await state.update_data(folder_name=message.text.lower())
+    await state.set_state(UpdateFolder.description)
+    return await message.answer(
+        "Write description of folder or press /pass to left the previous value"
+    )
+
+
+@router.message(UpdateFolder.description)
+async def answer_update_description(
+    message: Message, state: FSMContext, client: SUPABASE_CLIENT
+):
+    user_data = await state.get_data()
+    folder = client.update(
+        "Folders",
+        {
+            "name": user_data["folder_name"],
+            "description": message.text.lower()
+            if message.text != "/pass"
+            else user_data["folder_description"],
+        },
+        "id",
+        user_data["folder_id"],
+    )
+    if folder:
+        await state.set_state(state=None)
+        return await message.answer("You have successfully update the folder")
+    await state.set_state(UpdateFolder.name)
     return await message.answer("Try again from the name:")
 
 
@@ -87,7 +122,7 @@ async def delete_folder(
 async def update_folder(
     callback: CallbackQuery, callback_data: FoldersCallbackFactory, state: FSMContext
 ):
-    await state.set_state(Folder.name)
+    await state.set_state(UpdateFolder.name)
     await state.update_data(
         {
             "folder_name": callback_data.name,

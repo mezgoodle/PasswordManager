@@ -12,7 +12,7 @@ def folders_keyboard(folders: List[dict]):
             text=folder["name"],
             callback_data=FoldersCallbackFactory(
                 id=folder["id"],
-                action="update",
+                action="show",
                 name=folder["name"],
                 description=folder["description"],
             ),
