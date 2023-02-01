@@ -9,3 +9,8 @@ class UserCredentials(StatesGroup):
 class Folder(StatesGroup):
     name = State()
     description = State()
+
+
+class UpdateFolder(StatesGroup):
+    name = State()
+    description = State()
