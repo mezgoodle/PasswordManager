@@ -40,28 +40,25 @@ class SUPABASE_CLIENT:
             logger.error(e)
 
     def get_all(
-        self, table: str, columns: str = "*", column: str = None, value: str = None
+        self, table: str, columns: str = "*", conditions: dict = None
     ) -> List[dict]:
         """Method for getting all data from the table
 
         Args:
             table (str): name of the table
             columns (str, optional): names of the columns to select. Defaults to "*".
-            column (str, optional): name of the column as condition. Defaults to None.
-            value (str, optional): value of the column as condition. Defaults to None.
+            conditions (dict, optional): name of the column as condition. Defaults to None.
 
         Returns:
             List[dict]: list of the objects from the table
         """
         logger.info("Trying to getting data")
         try:
-            if column:
-                assert value is not None, "Value should be passed"
-                data = (
-                    self.client.table(table).select(columns).eq(column, value).execute()
-                )
-            else:
-                data = self.client.table(table).select(columns).execute()
+            data = self.client.table(table).select(columns)
+            if conditions:
+                for column, value in conditions.items():
+                    data = data.eq(column, value)
+            data = data.execute()
             return data.data
         except Exception as e:
             logger.error(e)
@@ -82,7 +79,7 @@ class SUPABASE_CLIENT:
         """
         logger.info("Trying to getting data")
         try:
-            return self.get_all(table, columns, column, value)[0]
+            return self.get_all(table, columns, {column: value})[0]
         except Exception as e:
             logger.error(e)
 
