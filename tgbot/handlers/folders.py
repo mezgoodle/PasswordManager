@@ -21,7 +21,7 @@ router.message.middleware(AuthMiddleware())
 
 @router.message(Command(commands=["folders"]))
 async def show_folders(message: Message, client: SUPABASE_CLIENT):
-    folders = client.get_all("Folders", column="user", value=str(message.from_user.id))
+    folders = client.get_all("Folders", conditions={"user": str(message.from_user.id)})
     keyboard = folders_keyboard(folders)
     return await message.answer("Your folders:", reply_markup=keyboard)
 
@@ -34,7 +34,6 @@ async def create_folder(message: Message, state: FSMContext):
 
 @router.message(Folder.name)
 async def answer_name(message: Message, state: FSMContext):
-    print("hello 2")
     await state.update_data(folder_name=message.text.lower())
     await state.set_state(Folder.description)
     return await message.answer("Write description of folder")
@@ -62,7 +61,6 @@ async def answer_description(
 
 @router.message(UpdateFolder.name)
 async def answer_update_name(message: Message, state: FSMContext):
-    print("hello 1")
     if message.text != "/pass":
         await state.update_data(folder_name=message.text.lower())
     await state.set_state(UpdateFolder.description)
@@ -98,7 +96,16 @@ async def answer_update_description(
 async def show_folder(
     callback: CallbackQuery,
     callback_data: FoldersCallbackFactory,
+    client: SUPABASE_CLIENT,
 ):
+    passwords = client.get_all(
+        "Passwords",
+        conditions={
+            "folder": callback_data.name,
+            "user": str(callback.from_user.id),
+        },
+    )
+    print(passwords)
     await callback.message.answer(
         f"Name: {html.bold(callback_data.name)}\nDescription: {html.bold(callback_data.description)}"
     )
