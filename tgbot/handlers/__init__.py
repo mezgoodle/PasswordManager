@@ -1,1 +1,1 @@
-from . import commands, folders, login, register
+from . import commands, folders, login, passwords, register
