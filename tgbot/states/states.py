@@ -14,3 +14,9 @@ class Folder(StatesGroup):
 class UpdateFolder(StatesGroup):
     name = State()
     description = State()
+
+
+class Password(StatesGroup):
+    name = State()
+    password = State()
+    folder = State()
