@@ -9,7 +9,7 @@ from tgbot.models.supabase import SUPABASE_CLIENT
 router = Router()
 router.message.filter(F.text)
 
-
+# TODO: clean here
 @router.message(CommandStart())
 async def answer_start(message: Message, client: SUPABASE_CLIENT):
     # result = client.insert(

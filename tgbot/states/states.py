@@ -20,3 +20,4 @@ class Password(StatesGroup):
     name = State()
     password = State()
     folder = State()
+    description = State()
