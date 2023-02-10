@@ -7,6 +7,7 @@ from loguru import logger
 
 from loader import bot, dp
 from tgbot.config import Settings, config
+from tgbot.misc.password_crypter import Crypter
 from tgbot.models.supabase import SUPABASE_CLIENT
 from tgbot.services.admins_notify import on_startup_notify
 from tgbot.services.setting_commands import set_default_commands
@@ -58,6 +59,9 @@ async def main():
     scheduler.start()
     logger.info("Starting the scheduler")
 
+    crypter = Crypter()
+    logger.info("Initialize crypter")
+
     await on_startup(dp, bot, config)
     await dp.start_polling(
         bot,
@@ -65,6 +69,7 @@ async def main():
         config=config,
         client=client,
         scheduler=scheduler,
+        crypter=crypter,
     )
 
 

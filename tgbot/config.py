@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     admins: List[str] = ["353057906"]
     SUPABASE_URL: SecretStr
     SUPABASE_KEY: SecretStr
+    FERNET_KEY: SecretStr
 
     class Config:
         env_file = ".env"
