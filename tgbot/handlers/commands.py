@@ -11,15 +11,7 @@ router.message.filter(F.text)
 
 # TODO: clean here
 @router.message(CommandStart())
-async def answer_start(message: Message, client: SUPABASE_CLIENT):
-    # result = client.insert(
-    #     "Users",
-    #     {
-    #         "username": message.from_user.username + "1",
-    #         "telegram_id": str(message.from_user.id) + "1",
-    #     },
-    # )
-    # assert result
+async def answer_start(message: Message):
     return await message.answer("start command")
 
 
@@ -31,19 +23,8 @@ async def cancel_state(message: Message, state: FSMContext):
 
 
 @router.message(Command(commands=["help"]))
-async def help_command(message: Message, client: SUPABASE_CLIENT):
-    # result = client.get_all("Users", "username, telegram_id")
-    # print(result)
-    # result = client.get_single("Users", "username", "sylvenis")
-    # print(result)
+async def help_command(message: Message):
     return await message.answer("help command")
-
-
-@router.message(Command(commands=["passwords"]))
-async def passwords_command(message: Message, client: SUPABASE_CLIENT):
-    # result = client.update("Users", {"username": "sylvenis"}, "username", "sylvenis")
-    # print(result)
-    return await message.answer("passwords")
 
 
 dp.include_router(router)
