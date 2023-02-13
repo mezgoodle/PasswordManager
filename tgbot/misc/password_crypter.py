@@ -16,7 +16,7 @@ class Crypter:
         Returns:
             str: encrypted text
         """
-        return str(self.fernet.encrypt(text.encode()))
+        return self.fernet.encrypt(text.encode()).decode()
 
     def decrypt(self, encrypted_text: str) -> str:
         """Method for decrypting text

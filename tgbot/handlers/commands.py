@@ -18,7 +18,7 @@ async def answer_start(message: Message):
 @router.message(Command(commands=["cancel"]))
 @router.message(Text(text="cancel", ignore_case=True))
 async def cancel_state(message: Message, state: FSMContext):
-    await state.clear()
+    await state.set_state(state=None)
     await message.answer(text="Action is canceled", reply_markup=ReplyKeyboardRemove())
 
 
