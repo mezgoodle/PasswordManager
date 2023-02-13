@@ -5,8 +5,8 @@ from aiogram.types import CallbackQuery, Message
 
 from loader import dp
 from tgbot.keyboards.inline.callbacks import PasswordsCallbackFactory
-from tgbot.keyboards.inline.folders import folders_keyboard
 from tgbot.keyboards.inline.passwords import passwords_keyboard
+from tgbot.keyboards.inline.question import question_keyboard
 from tgbot.keyboards.reply.folders import folders_keyboard as reply_fk
 from tgbot.middlewares.authenticated import AuthMiddleware
 from tgbot.misc.password_crypter import Crypter
@@ -17,7 +17,7 @@ router = Router()
 router.message.filter(F.text)
 router.message.middleware(AuthMiddleware())
 
-
+# TODO: handle empty records
 @router.message(Command(commands=["passwords"]))
 async def show_passwords(message: Message, client: SUPABASE_CLIENT, state: FSMContext):
     folders = client.get_all("Folders", conditions={"user": str(message.from_user.id)})
@@ -100,6 +100,19 @@ async def show_password(
     password = client.get_single("Passwords", "id", callback_data.id)
     await callback.message.answer(
         f"Name: {html.bold(password['name'])}\nDescription: {html.bold(password['description'])}\nPassword: {html.bold(crypter.decrypt(password['hashedPassword']))}"
+    )
+    return await callback.answer()
+
+
+@router.callback_query(PasswordsCallbackFactory.filter(F.action == "delete"))
+async def delete_password(
+    callback: CallbackQuery, callback_data: PasswordsCallbackFactory, state: FSMContext
+):
+    await state.update_data({"delete_id": callback_data.id})
+    keyboard = question_keyboard("Passwords")
+    await callback.message.answer(
+        f"Are you sure to delete {html.bold(callback_data.name)} password?",
+        reply_markup=keyboard,
     )
     return await callback.answer()
 

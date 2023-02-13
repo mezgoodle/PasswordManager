@@ -17,7 +17,9 @@ def passwords_keyboard(passwords: List[dict]):
         )
         builder.button(
             text="Delete",
-            callback_data=PasswordsCallbackFactory(id=password["id"], action="delete"),
+            callback_data=PasswordsCallbackFactory(
+                id=password["id"], action="delete", name=password["name"]
+            ),
         )
         # builder.button(
         #     text="Update",

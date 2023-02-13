@@ -18,7 +18,7 @@ router = Router()
 router.message.filter(F.text)
 router.message.middleware(AuthMiddleware())
 
-
+# TODO: handle empty records
 @router.message(Command(commands=["folders"]))
 async def show_folders(message: Message, client: SUPABASE_CLIENT):
     folders = client.get_all("Folders", conditions={"user": str(message.from_user.id)})
@@ -107,8 +107,8 @@ async def show_folder(
 async def delete_folder(
     callback: CallbackQuery, callback_data: FoldersCallbackFactory, state: FSMContext
 ):
-    await state.update_data({"folder_id": callback_data.id})
-    keyboard = question_keyboard()
+    await state.update_data({"delete_id": callback_data.id})
+    keyboard = question_keyboard("Folders")
     await callback.message.answer(
         f"Are you sure to delete {html.bold(callback_data.name)} folder?",
         reply_markup=keyboard,
@@ -144,9 +144,9 @@ async def delete_folder_answer(
 ):
     data = await state.get_data()
     if callback_data.answer:
-        client.delete("Folders", "id", data["folder_id"])
-        await state.update_data({"folder_id": None})
-        await callback.message.answer(f"Folder has been deleted")
+        client.delete(callback_data.type, "id", data["delete_id"])
+        await state.update_data({"delete_id": None})
+        await callback.message.answer("Object has been deleted")
     return await callback.answer()
 
 
