@@ -10,5 +10,10 @@ class FoldersCallbackFactory(CallbackData, prefix="folder"):
     description: Optional[str]
 
 
+class PasswordsCallbackFactory(CallbackData, prefix="password"):
+    id: str
+    action: str
+
+
 class QuestionCallbackFactory(CallbackData, prefix="question"):
     answer: bool

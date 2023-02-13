@@ -1,10 +1,12 @@
-from aiogram import F, Router
-from aiogram.filters import Command
+from aiogram import F, Router, html
+from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message
+from aiogram.types import CallbackQuery, Message
 
 from loader import dp
+from tgbot.keyboards.inline.callbacks import PasswordsCallbackFactory
 from tgbot.keyboards.inline.folders import folders_keyboard
+from tgbot.keyboards.inline.passwords import passwords_keyboard
 from tgbot.keyboards.reply.folders import folders_keyboard as reply_fk
 from tgbot.middlewares.authenticated import AuthMiddleware
 from tgbot.misc.password_crypter import Crypter
@@ -17,10 +19,24 @@ router.message.middleware(AuthMiddleware())
 
 
 @router.message(Command(commands=["passwords"]))
-async def show_passwords(message: Message, client: SUPABASE_CLIENT):
+async def show_passwords(message: Message, client: SUPABASE_CLIENT, state: FSMContext):
     folders = client.get_all("Folders", conditions={"user": str(message.from_user.id)})
-    keyboard = folders_keyboard(folders)
+    keyboard = reply_fk(folders)
+    await state.set_state("folder_name")
     return await message.answer("Click on the folders:", reply_markup=keyboard)
+
+
+@router.message(StateFilter("folder_name"))
+async def show_passwords_from_folder(
+    message: Message, client: SUPABASE_CLIENT, state: FSMContext
+):
+    passwords = client.get_all(
+        "Passwords",
+        conditions={"user": str(message.from_user.id), "folder": message.text},
+    )
+    keyboard = passwords_keyboard(passwords)
+    await state.set_state(state=None)
+    return await message.answer("Here are your passwords:", reply_markup=keyboard)
 
 
 @router.message(Command(commands=["create_password", "cp"]))
@@ -47,9 +63,10 @@ async def answer_description(message: Message, state: FSMContext):
 async def answer_password(
     message: Message, state: FSMContext, client: SUPABASE_CLIENT, crypter: Crypter
 ):
-    await state.update_data(password_code=crypter.encrypt(message.text))
+    await state.update_data(password_code=str(crypter.encrypt(message.text)))
     await state.set_state(Password.folder)
-    keyboard = reply_fk(client, message.from_user.id)
+    folders = client.get_all("Folders", conditions={"user": str(message.from_user.id)})
+    keyboard = reply_fk(folders)
     return await message.answer("Choose folder:", reply_markup=keyboard)
 
 
@@ -71,6 +88,20 @@ async def answer_password(message: Message, state: FSMContext, client: SUPABASE_
         return await message.answer("You have successfully create the password")
     await state.set_state(Password.name)
     return await message.answer("Try again from the name:")
+
+
+@router.callback_query(PasswordsCallbackFactory.filter(F.action == "show"))
+async def show_password(
+    callback: CallbackQuery,
+    callback_data: PasswordsCallbackFactory,
+    crypter: Crypter,
+    client: SUPABASE_CLIENT,
+):
+    password = client.get_single("Passwords", "id", callback_data.id)
+    await callback.message.answer(
+        f"Name: {html.bold(password['name'])}\nDescription: {html.bold(password['description'])}\nPassword: {html.bold(crypter.decrypt(password['hashedPassword']))}"
+    )
+    return await callback.answer()
 
 
 dp.include_router(router)
