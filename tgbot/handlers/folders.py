@@ -96,16 +96,7 @@ async def answer_update_description(
 async def show_folder(
     callback: CallbackQuery,
     callback_data: FoldersCallbackFactory,
-    client: SUPABASE_CLIENT,
 ):
-    passwords = client.get_all(
-        "Passwords",
-        conditions={
-            "folder": callback_data.name,
-            "user": str(callback.from_user.id),
-        },
-    )
-    print(passwords)
     await callback.message.answer(
         f"Name: {html.bold(callback_data.name)}\nDescription: {html.bold(callback_data.description)}"
     )
