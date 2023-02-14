@@ -21,16 +21,12 @@ def passwords_keyboard(passwords: List[dict]):
                 id=password["id"], action="delete", name=password["name"]
             ),
         )
-        # builder.button(
-        #     text="Update",
-        #     callback_data=PasswordsCallbackFactory(
-        #         id=password["id"],
-        #         action="update",
-        #         name=password["name"],
-        #         description=password["description"],
-        #         password=password["hashedPassword"],
-        #         folder=password["folder"],
-        #     ),
-        # )
+        builder.button(
+            text="Update",
+            callback_data=PasswordsCallbackFactory(
+                id=password["id"],
+                action="update",
+            ),
+        )
     builder.adjust(3)
     return builder.as_markup()

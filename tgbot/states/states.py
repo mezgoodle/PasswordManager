@@ -21,3 +21,10 @@ class Password(StatesGroup):
     password = State()
     folder = State()
     description = State()
+
+
+class UpdatePassword(StatesGroup):
+    name = State()
+    password = State()
+    folder = State()
+    description = State()
