@@ -62,7 +62,7 @@ async def answer_description(
 @router.message(UpdateFolder.name)
 async def answer_update_name(message: Message, state: FSMContext):
     if message.text != "/pass":
-        await state.update_data(folder_name=message.text.lower())
+        await state.update_data(folder_name=message.text)
     await state.set_state(UpdateFolder.description)
     return await message.answer(
         "Write description of folder or press /pass to left the previous value"
@@ -73,14 +73,14 @@ async def answer_update_name(message: Message, state: FSMContext):
 async def answer_update_description(
     message: Message, state: FSMContext, client: SUPABASE_CLIENT
 ):
+    if message.text != "/pass":
+        await state.update_data(folder_description=message.text)
     user_data = await state.get_data()
     folder = client.update(
         "Folders",
         {
             "name": user_data["folder_name"],
-            "description": message.text.lower()
-            if message.text != "/pass"
-            else user_data["folder_description"],
+            "description": user_data["folder_description"],
         },
         "id",
         user_data["folder_id"],
@@ -126,7 +126,6 @@ async def update_folder(
             "folder_name": callback_data.name,
             "folder_description": callback_data.description,
             "folder_id": callback_data.id,
-            "type": "update",
         }
     )
     await callback.message.answer(
