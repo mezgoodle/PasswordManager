@@ -18,12 +18,14 @@ router = Router()
 router.message.filter(F.text)
 router.message.middleware(AuthMiddleware())
 
-# TODO: handle empty records
+
 @router.message(Command(commands=["folders"]))
 async def show_folders(message: Message, client: SUPABASE_CLIENT):
     folders = client.get_all("Folders", conditions={"user": str(message.from_user.id)})
-    keyboard = folders_keyboard(folders)
-    return await message.answer("Your folders:", reply_markup=keyboard)
+    if folders:
+        keyboard = folders_keyboard(folders)
+        return await message.answer("Your folders:", reply_markup=keyboard)
+    return message.answer("You don't have folders, create a new one with /cf")
 
 
 @router.message(Command(commands=["create_folder", "cf"]))
@@ -143,9 +145,11 @@ async def delete_folder_answer(
 ):
     data = await state.get_data()
     if callback_data.answer:
-        client.delete(callback_data.type, "id", data["delete_id"])
-        await state.update_data({"delete_id": None})
-        await callback.message.answer("Object has been deleted")
+        status = client.delete(callback_data.type, "id", data["delete_id"])
+        if status:
+            await state.update_data({"delete_id": None})
+            return await callback.message.answer("Object has been deleted.")
+        return await callback.message.answer("Error happened while deleting.")
     return await callback.answer()
 
 

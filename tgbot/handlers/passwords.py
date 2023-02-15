@@ -17,13 +17,15 @@ router = Router()
 router.message.filter(F.text)
 router.message.middleware(AuthMiddleware())
 
-# TODO: handle empty records
+
 @router.message(Command(commands=["passwords"]))
 async def show_passwords(message: Message, client: SUPABASE_CLIENT, state: FSMContext):
     folders = client.get_all("Folders", conditions={"user": str(message.from_user.id)})
-    keyboard = reply_fk(folders)
-    await state.set_state("folder_name")
-    return await message.answer("Click on the folders:", reply_markup=keyboard)
+    if folders:
+        keyboard = reply_fk(folders)
+        await state.set_state("folder_name")
+        return await message.answer("Click on the folders:", reply_markup=keyboard)
+    return message.answer("You don't have folders, create a new one with /cf")
 
 
 @router.message(StateFilter("folder_name"))
@@ -34,9 +36,11 @@ async def show_passwords_from_folder(
         "Passwords",
         conditions={"user": str(message.from_user.id), "folder": message.text},
     )
-    keyboard = passwords_keyboard(passwords)
-    await state.set_state(state=None)
-    return await message.answer("Here are your passwords:", reply_markup=keyboard)
+    if passwords:
+        keyboard = passwords_keyboard(passwords)
+        await state.set_state(state=None)
+        return await message.answer("Here are your passwords:", reply_markup=keyboard)
+    return await message.answer("You don't have folders, create a new one with /cp")
 
 
 @router.message(Command(commands=["create_password", "cp"]))

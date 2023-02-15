@@ -4,15 +4,16 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
 
 from loader import dp
-from tgbot.models.supabase import SUPABASE_CLIENT
 
 router = Router()
 router.message.filter(F.text)
 
-# TODO: clean here
+
 @router.message(CommandStart())
 async def answer_start(message: Message):
-    return await message.answer("start command")
+    return await message.answer(
+        "Welcome to the PasswordManager. To store your passwords you need to register in the system. Use command /r. For more command use /help."
+    )
 
 
 @router.message(Command(commands=["cancel"]))
@@ -24,7 +25,9 @@ async def cancel_state(message: Message, state: FSMContext):
 
 @router.message(Command(commands=["help"]))
 async def help_command(message: Message):
-    return await message.answer("help command")
+    return await message.answer(
+        "/r - register\n/l - login\n/passwords - passwords\n/folders - folders\n/cp - create password\n/cf - create folder"
+    )
 
 
 dp.include_router(router)

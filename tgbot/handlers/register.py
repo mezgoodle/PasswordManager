@@ -12,12 +12,15 @@ router.message.filter(F.text)
 
 
 @router.message(Command(commands=["reg", "register", "r"]))
-async def start_register(message: Message, state: FSMContext):
+async def start_register(message: Message, state: FSMContext, client: SUPABASE_CLIENT):
     user_data = await state.get_data()
     try:
         _ = user_data["token"]
         return await message.answer(html.bold("You have already logged in"))
     except KeyError:
+        user = client.get_single("Users", "telegram_id", "ddsad")
+        if user:
+            return await message.answer("You have already registered in the system.")
         await state.set_state(UserCredentials.email)
         return await message.answer(
             "You have started your registration process. Enter your working email."
