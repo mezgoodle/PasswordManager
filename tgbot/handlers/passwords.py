@@ -20,7 +20,9 @@ router.message.middleware(AuthMiddleware())
 
 @router.message(Command(commands=["passwords"]))
 async def show_passwords(message: Message, client: SUPABASE_CLIENT, state: FSMContext):
-    folders = client.get_all("Folders", conditions={"user": str(message.from_user.id)})
+    folders, _ = client.get_all(
+        "Folders", conditions={"user": str(message.from_user.id)}
+    )
     if folders:
         keyboard = reply_fk(folders)
         await state.set_state("folder_name")
@@ -32,7 +34,7 @@ async def show_passwords(message: Message, client: SUPABASE_CLIENT, state: FSMCo
 async def show_passwords_from_folder(
     message: Message, client: SUPABASE_CLIENT, state: FSMContext
 ):
-    passwords = client.get_all(
+    passwords, count = client.get_all(
         "Passwords",
         conditions={"user": str(message.from_user.id), "folder": message.text},
     )
@@ -69,7 +71,9 @@ async def answer_password(
 ):
     await state.update_data(password_code=str(crypter.encrypt(message.text)))
     await state.set_state(Password.folder)
-    folders = client.get_all("Folders", conditions={"user": str(message.from_user.id)})
+    folders, _ = client.get_all(
+        "Folders", conditions={"user": str(message.from_user.id)}
+    )
     keyboard = reply_fk(folders)
     return await message.answer("Choose folder:", reply_markup=keyboard)
 
@@ -121,7 +125,9 @@ async def answer_update_password(
     if message.text != "/pass":
         await state.update_data(password_hashed=crypter.encrypt(message.text))
     await state.set_state(UpdatePassword.folder)
-    folders = client.get_all("Folders", conditions={"user": str(message.from_user.id)})
+    folders, _ = client.get_all(
+        "Folders", conditions={"user": str(message.from_user.id)}
+    )
     keyboard = reply_fk(folders)
     return await message.answer(
         "Choose folder name or press /pass to left the previous value",

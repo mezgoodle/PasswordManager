@@ -21,7 +21,10 @@ router.message.middleware(AuthMiddleware())
 
 @router.message(Command(commands=["folders"]))
 async def show_folders(message: Message, client: SUPABASE_CLIENT):
-    folders = client.get_all("Folders", conditions={"user": str(message.from_user.id)})
+    folders, count = client.get_all(
+        "Folders", conditions={"user": str(message.from_user.id)}
+    )
+    print(folders, count)
     if folders:
         keyboard = folders_keyboard(folders)
         return await message.answer("Your folders:", reply_markup=keyboard)

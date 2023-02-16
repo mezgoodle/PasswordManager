@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 from aiogram.fsm.context import FSMContext
 from gotrue.exceptions import APIError
@@ -41,7 +41,7 @@ class SUPABASE_CLIENT:
 
     def get_all(
         self, table: str, columns: str = "*", conditions: dict = None
-    ) -> List[dict]:
+    ) -> Tuple[List[dict], int]:
         """Method for getting all data from the table
 
         Args:
@@ -50,16 +50,16 @@ class SUPABASE_CLIENT:
             conditions (dict, optional): name of the column as condition. Defaults to None.
 
         Returns:
-            List[dict]: list of the objects from the table
+            Tuple[List[dict], int]: list of the objects and number of rows
         """
         logger.info("Trying to getting data")
         try:
-            data = self.client.table(table).select(columns)
+            data = self.client.table(table).select(columns, count="exact")
             if conditions:
                 for column, value in conditions.items():
                     data = data.eq(column, value)
             data = data.execute()
-            return data.data
+            return data.data, data.count
         except Exception as e:
             logger.error(e)
 
@@ -79,7 +79,7 @@ class SUPABASE_CLIENT:
         """
         logger.info("Trying to getting data")
         try:
-            return self.get_all(table, columns, {column: value})[0]
+            return self.get_all(table, columns, {column: value})[0][0]
         except Exception as e:
             logger.error(e)
 
