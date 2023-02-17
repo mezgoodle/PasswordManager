@@ -1,11 +1,17 @@
 from typing import List
 
+from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from tgbot.keyboards.inline.callbacks import FoldersCallbackFactory
+from tgbot.keyboards.inline.callbacks import (
+    FoldersCallbackFactory,
+    PagesCallbackFactory,
+)
 
 
-def folders_keyboard(folders: List[dict]):
+def folders_keyboard(folders: List[dict], count: int, page: int = 1):
+    per_page = 5
+    folders = folders[per_page * (page - 1) : per_page * page]
     builder = InlineKeyboardBuilder()
     for folder in folders:
         builder.button(
@@ -32,5 +38,14 @@ def folders_keyboard(folders: List[dict]):
                 description=folder["description"],
             ),
         )
+    builder.button(
+        text="Previous <<",
+        callback_data=PagesCallbackFactory(page=page - 1, type="folders"),
+    ) if per_page * (page - 1) != 0 else None
+    builder.button(text="Page", callback_data="Nothing")
+    builder.button(
+        text=">> Next",
+        callback_data=PagesCallbackFactory(page=page + 1, type="folders"),
+    ) if per_page * page < count else None
     builder.adjust(3)
     return builder.as_markup()

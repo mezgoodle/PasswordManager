@@ -19,3 +19,9 @@ class PasswordsCallbackFactory(CallbackData, prefix="password"):
 class QuestionCallbackFactory(CallbackData, prefix="question"):
     answer: bool
     type: str
+
+
+class PagesCallbackFactory(CallbackData, prefix="page"):
+    page: int
+    type: str
+    folder: Optional[str]

@@ -6,6 +6,7 @@ from aiogram.types import CallbackQuery, Message
 from loader import dp
 from tgbot.keyboards.inline.callbacks import (
     FoldersCallbackFactory,
+    PagesCallbackFactory,
     QuestionCallbackFactory,
 )
 from tgbot.keyboards.inline.folders import folders_keyboard
@@ -24,9 +25,8 @@ async def show_folders(message: Message, client: SUPABASE_CLIENT):
     folders, count = client.get_all(
         "Folders", conditions={"user": str(message.from_user.id)}
     )
-    print(folders, count)
     if folders:
-        keyboard = folders_keyboard(folders)
+        keyboard = folders_keyboard(folders, count)
         return await message.answer("Your folders:", reply_markup=keyboard)
     return message.answer("You don't have folders, create a new one with /cf")
 
@@ -154,6 +154,19 @@ async def delete_folder_answer(
             return await callback.message.answer("Object has been deleted.")
         return await callback.message.answer("Error happened while deleting.")
     return await callback.answer()
+
+
+@router.callback_query(PagesCallbackFactory.filter(F.type == "folders"))
+async def change_page(
+    callback: CallbackQuery,
+    callback_data: PagesCallbackFactory,
+    client: SUPABASE_CLIENT,
+):
+    folders, count = client.get_all(
+        "Folders", conditions={"user": str(callback.from_user.id)}
+    )
+    keyboard = folders_keyboard(folders, count, callback_data.page)
+    return await callback.message.edit_reply_markup(reply_markup=keyboard)
 
 
 dp.include_router(router)

@@ -4,7 +4,10 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
 from loader import dp
-from tgbot.keyboards.inline.callbacks import PasswordsCallbackFactory
+from tgbot.keyboards.inline.callbacks import (
+    PagesCallbackFactory,
+    PasswordsCallbackFactory,
+)
 from tgbot.keyboards.inline.passwords import passwords_keyboard
 from tgbot.keyboards.inline.question import question_keyboard
 from tgbot.keyboards.reply.folders import folders_keyboard as reply_fk
@@ -38,11 +41,11 @@ async def show_passwords_from_folder(
         "Passwords",
         conditions={"user": str(message.from_user.id), "folder": message.text},
     )
+    await state.set_state(state=None)
     if passwords:
-        keyboard = passwords_keyboard(passwords)
-        await state.set_state(state=None)
+        keyboard = passwords_keyboard(passwords, count, folder=message.text)
         return await message.answer("Here are your passwords:", reply_markup=keyboard)
-    return await message.answer("You don't have folders, create a new one with /cp")
+    return await message.answer("You don't have passwords, create a new one with /cp")
 
 
 @router.message(Command(commands=["create_password", "cp"]))
@@ -209,6 +212,22 @@ async def delete_password(
         reply_markup=keyboard,
     )
     return await callback.answer()
+
+
+@router.callback_query(PagesCallbackFactory.filter(F.type == "passwords"))
+async def change_page(
+    callback: CallbackQuery,
+    callback_data: PagesCallbackFactory,
+    client: SUPABASE_CLIENT,
+):
+    passwords, count = client.get_all(
+        "Passwords",
+        conditions={"user": str(callback.from_user.id), "folder": callback_data.folder},
+    )
+    keyboard = passwords_keyboard(
+        passwords, count, page=callback_data.page, folder=callback_data.folder
+    )
+    return await callback.message.edit_reply_markup(reply_markup=keyboard)
 
 
 dp.include_router(router)
