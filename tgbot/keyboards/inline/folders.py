@@ -1,6 +1,5 @@
 from typing import List
 
-from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from tgbot.keyboards.inline.callbacks import (
@@ -12,6 +11,7 @@ from tgbot.keyboards.inline.callbacks import (
 def folders_keyboard(folders: List[dict], count: int, page: int = 1):
     per_page = 5
     folders = folders[per_page * (page - 1) : per_page * page]
+    folders = sorted(folders, key=lambda x: x["name"])
     builder = InlineKeyboardBuilder()
     for folder in folders:
         builder.button(
