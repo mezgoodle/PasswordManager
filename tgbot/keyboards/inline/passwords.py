@@ -16,7 +16,6 @@ def passwords_keyboard(
 ):
     per_page = 5
     passwords = passwords[per_page * (page - 1) : per_page * page]
-    passwords = sorted(passwords, key=lambda x: x["name"])
     builder = InlineKeyboardBuilder()
     for password in passwords:
         builder.button(
