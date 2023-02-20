@@ -44,7 +44,7 @@ def passwords_keyboard(
             page=page - 1, type="passwords", folder=folder
         ),
     ) if per_page * (page - 1) != 0 else None
-    builder.button(text="Page", callback_data="Nothing")
+    builder.button(text=f"Page {page}", callback_data="Nothing")
     builder.button(
         text=">> Next",
         callback_data=PagesCallbackFactory(
