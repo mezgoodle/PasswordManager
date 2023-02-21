@@ -18,7 +18,7 @@ async def start_register(message: Message, state: FSMContext, client: SUPABASE_C
         _ = user_data["token"]
         return await message.answer(html.bold("You have already logged in"))
     except KeyError:
-        user = client.get_single("Users", "telegram_id", "ddsad")
+        user = client.get_single("Users", "telegram_id", str(message.from_user.id))
         if user:
             return await message.answer("You have already registered in the system.")
         await state.set_state(UserCredentials.email)

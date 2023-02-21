@@ -54,7 +54,7 @@ class SUPABASE_CLIENT:
         """
         logger.info("Trying to getting data")
         try:
-            data = self.client.table(table).select(columns, count="exact").order("name")
+            data = self.client.table(table).select(columns, count="exact")
             if conditions:
                 for column, value in conditions.items():
                     data = data.eq(column, value)
