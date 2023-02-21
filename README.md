@@ -1,5 +1,3 @@
-# PasswordManager
-
 <h1 id="project-title" align="center">
   PasswordManager <img alt="logo" width="40" height="40" src="https://raw.githubusercontent.com/mezgoodle/images/master/MezidiaLogoTransparent.png" /><br>
   <img alt="language" src="https://img.shields.io/badge/language-python-brightgreen?style=flat-square" />
