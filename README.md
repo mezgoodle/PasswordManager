@@ -1,154 +1,57 @@
-# bot_template
-
-My template for aiogram bots
+# PasswordManager
 
 <h1 id="project-title" align="center">
-  bot_template <img alt="logo" width="40" height="40" src="https://raw.githubusercontent.com/mezgoodle/images/master/MezidiaLogoTransparent.png" /><br>
+  PasswordManager <img alt="logo" width="40" height="40" src="https://raw.githubusercontent.com/mezgoodle/images/master/MezidiaLogoTransparent.png" /><br>
   <img alt="language" src="https://img.shields.io/badge/language-python-brightgreen?style=flat-square" />
-  <img alt="issues" src="https://img.shields.io/github/issues/mezgoodle/bot_template?style=flat-square" />
-  <img alt="GitHub closed issues" src="https://img.shields.io/github/issues-closed/mezgoodle/bot_template?style=flat-square" />
-  <img alt="GitHub pull requests" src="https://img.shields.io/github/issues-pr/mezgoodle/bot_template?style=flat-square" />
-  <img alt="GitHub closed pull requests" src="https://img.shields.io/github/issues-pr-closed/mezgoodle/bot_template?style=flat-square" />
-  <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/mezgoodle/bot_template?style=flat-square">
+  <img alt="issues" src="https://img.shields.io/github/issues/mezgoodle/PasswordManager?style=flat-square" />
+  <img alt="GitHub closed issues" src="https://img.shields.io/github/issues-closed/mezgoodle/PasswordManager?style=flat-square" />
+  <img alt="GitHub pull requests" src="https://img.shields.io/github/issues-pr/mezgoodle/PasswordManager?style=flat-square" />
+  <img alt="GitHub closed pull requests" src="https://img.shields.io/github/issues-pr-closed/mezgoodle/PasswordManager?style=flat-square" />
+  <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/mezgoodle/PasswordManager?style=flat-square">
   <img alt="Wakatime stats" src="https://wakatime.com/badge/github/mezgoodle/PasswordManager.svg">
 </h1>
 
 <p align="center">
- 🌟Hello everyone! This is the template for developing Telegram bots on Python with aiogram.🌟
+ 🌟Hello everyone! This is the bot that stores your passwords in the database.🌟
 </p>
 
 ## Motivation :exclamation:
 
-When I was developing [Telegramia](https://github.com/mezidia/telegramia), I've used these templates: [aiogram-bot-template](https://github.com/Latand/aiogram-bot-template) and [tgbot_template](https://github.com/Latand/tgbot_template) for creating bots. And I have many problems with them. So I decided to create my own template.
+Recently, I created a [template](https://github.com/mezgoodle/bot_template/tree/aiogramv3) for developing bots on the third version of aiogram and wanted to try it out as soon as possible. I also heard a lot about [Supabase](https://supabase.com/) and thought why not use it in the project? So, I made a bot that shows your passwords (and password folders) that are encrypted in the database. Registration and login are also implemented using Supabase services.
 
-## Diagram
+## Screenshots :camera:
 
-Here you can understand how the template works and what is imported from where.
+- Start commands
 
-```mermaid
-classDiagram
-    bot <|-- loader: dp
-    bot <|-- aiogram: executor
-    bot <|-- `tgbot.handlers`
-    bot <|-- `tgbot.filters`: custom_filter
-    bot <|-- `tgbot.middlewares` : custom_middleware
-    bot <|-- `tgbot.services` : set_commands(), on_startup_notify()
-    bot <|-- `tgbot.config` : load_config()
-    `tgbot.handlers` <|-- some_handler
-    `tgbot.handlers` <|-- `tgbot.keyboards`: reply_keyboard, inline_keyboard
-    `tgbot.handlers` <|-- `tgbot.middlewares` : rate_limit()
-    `tgbot.handlers` <|-- `tgbot.states` : custom_state
-    some_handler <|-- loader: dp
-    loader <|-- `tgbot.config` : load_config()
-    `tgbot.keyboards` <|-- reply
-    `tgbot.keyboards` <|-- inline
-    `tgbot.middlewares` <|-- custom_middleware
-    `tgbot.services` <|-- set_default_commands
-    `tgbot.services` <|-- admins_notify
-    class bot{
-      loguru logger
-      executor
-      register_all_middlewares(dispatcher: Dispatcher)
-      register_all_filters(dispatcher: Dispatcher)
-      register_all_handlers(dispatcher: Dispatcher)
-      register_all_commands(dispatcher: Dispatcher)
-      on_startup(dispatcher: Dispatcher)
-      on_shutdown(dispatcher: Dispatcher)
-      executor.start_polling()
-    }
-    class aiogram{
-        executor
-    }
-    class loader{
-      Config config
-      Bot bot
-      Dispatcher dp
-      MemoryStorage storage
-    }
-    class `tgbot.config`{
-      load_config()
-    }
-    class `tgbot.handlers`{
-    }
-    class some_handler{
+![start](https://raw.githubusercontent.com/mezgoodle/images/master/passwordmanager1.png)
 
-    }
-    class `tgbot.filters`{
-      custom_filter
-    }
-    class `tgbot.keyboards`{
+- Registration and login
 
-    }
-    class reply {
-        reply_keyboard
-    }
-    class inline {
-        inline_keyboard
-    }
-    class `tgbot.middlewares` {
+![registration_and_login](https://raw.githubusercontent.com/mezgoodle/images/master/passwordmanager2.png)
 
-    }
-    class custom_middleware {
-        rate_limit()
-    }
-    class `tgbot.misc` {
+- Folders and creating new folders
 
-    }
-    class `tgbot.models` {
+![creating_folders](https://raw.githubusercontent.com/mezgoodle/images/master/passwordmanager3.png)
 
-    }
-    class `tgbot.services` {
+- Updating folders
 
-    }
-    class set_default_commands {
-        set_commands()
-    }
-    class admins_notify {
-        on_startup_notify()
-    }
-    class `tgbot.states` {
-        custom_state
-    }
-```
+![updating_folders](https://raw.githubusercontent.com/mezgoodle/images/master/passwordmanager4.png)
 
-## Examples
+- Deleting folders
 
-- [genji-moderator](https://github.com/mezgoodle/genji-moderator)
-- [Telegramia](https://github.com/mezidia/Telegramia)
-- [weather-bot](https://github.com/mezgoodle/weather-bot)
+![deleting_folders](https://raw.githubusercontent.com/mezgoodle/images/master/passwordmanager5.png)
 
-## Installation :computer:
+- Passwords
 
-1. Clone the repository
+![passwords](https://raw.githubusercontent.com/mezgoodle/images/master/passwordmanager6.png)
 
-```bash
-git clone https://github.com/mezgoodle/bot_template.git
-```
+- How passwords are stored in the database
 
-2. Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-## Fast usage :dash:
-
-1. Set the bot token in the tgbot.config.py file
-
-2. Run the bot
-
-```bash
-python bot.py
-```
+![passwods_in_db](https://raw.githubusercontent.com/mezgoodle/images/master/passwordmanager7.png)
 
 ## Contribute :running:
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-
-## Credits :cat::handshake:
-
-- [aiogram-bot-template](https://github.com/Latand/aiogram-bot-template)
-- [tgbot_template](https://github.com/Latand/tgbot_template)
 
 ## License :bookmark:
 
