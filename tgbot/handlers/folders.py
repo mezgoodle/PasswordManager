@@ -39,7 +39,7 @@ async def create_folder(message: Message, state: FSMContext):
 
 @router.message(Folder.name)
 async def answer_name(message: Message, state: FSMContext):
-    await state.update_data(folder_name=message.text.lower())
+    await state.update_data(folder_name=message.text)
     await state.set_state(Folder.description)
     return await message.answer("Write description of folder")
 
@@ -53,7 +53,7 @@ async def answer_description(
         "Folders",
         {
             "name": user_data["folder_name"],
-            "description": message.text.lower(),
+            "description": message.text,
             "user": str(message.from_user.id),
         },
     )
@@ -61,7 +61,9 @@ async def answer_description(
         await state.set_state(state=None)
         return await message.answer("You have successfully create the folder")
     await state.set_state(Folder.name)
-    return await message.answer("Try again from the name:")
+    return await message.answer(
+        "Try again from the name, or press /cancel to end proccess:"
+    )
 
 
 @router.message(UpdateFolder.name)
@@ -94,7 +96,9 @@ async def answer_update_description(
         await state.set_state(state=None)
         return await message.answer("You have successfully update the folder")
     await state.set_state(UpdateFolder.name)
-    return await message.answer("Try again from the name:")
+    return await message.answer(
+        "Try again from the name, or press /cancel to end proccess:"
+    )
 
 
 @router.callback_query(FoldersCallbackFactory.filter(F.action == "show"))

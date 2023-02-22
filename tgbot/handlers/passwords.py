@@ -98,7 +98,9 @@ async def answer_password(message: Message, state: FSMContext, client: SUPABASE_
         await state.set_state(state=None)
         return await message.answer("You have successfully create the password")
     await state.set_state(Password.name)
-    return await message.answer("Try again from the name:")
+    return await message.answer(
+        "Try again from the name, or press /cancel to end proccess:"
+    )
 
 
 @router.message(UpdatePassword.name)
@@ -160,7 +162,9 @@ async def answer_update_folder(
         await state.set_state(state=None)
         return await message.answer("You have successfully update the password")
     await state.set_state(UpdatePassword.name)
-    return await message.answer("Try again from the name:")
+    return await message.answer(
+        "Try again from the name, or press /cancel to end proccess:"
+    )
 
 
 @router.callback_query(PasswordsCallbackFactory.filter(F.action == "show"))

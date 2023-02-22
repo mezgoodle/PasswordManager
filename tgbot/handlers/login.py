@@ -29,7 +29,7 @@ async def start_login(message: Message, state: FSMContext):
 async def answer_email(message: Message, state: FSMContext):
     await state.update_data(email=message.text.lower())
     await state.set_state(UserCredentials.password)
-    await message.answer("Now enter your password")
+    return await message.answer("Now enter your password")
 
 
 @router.message(UserCredentials.password)
