@@ -152,7 +152,7 @@ async def delete_folder_answer(
 ):
     data = await state.get_data()
     if callback_data.answer:
-        status = client.delete(callback_data.type, "id", data["delete_id"])
+        status = client.delete(callback_data.object_type, "id", data["delete_id"])
         if status:
             await state.update_data({"delete_id": None})
             return await callback.message.answer("Object has been deleted.")

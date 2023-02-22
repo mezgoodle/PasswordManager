@@ -18,7 +18,7 @@ class PasswordsCallbackFactory(CallbackData, prefix="password"):
 
 class QuestionCallbackFactory(CallbackData, prefix="question"):
     answer: bool
-    type: str
+    object_type: str
 
 
 class PagesCallbackFactory(CallbackData, prefix="page"):
